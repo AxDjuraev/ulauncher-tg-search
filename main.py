@@ -14,7 +14,7 @@ icon_file='images/icon.png'
 class TelegramSeachExtension(Extension):
     def __init__(self):
         super(TelegramSeachExtension, self).__init__()
-        self.subscribe(KeywordQueryEvent, )
+        self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
 
 
 class KeywordQueryEventListener(EventListener):
