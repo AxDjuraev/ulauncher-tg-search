@@ -8,10 +8,10 @@
 		"query_debounce": 0.6
 	},
 	"preferences": [{
-		"id": "youtube_search_extension",
+		"id": "telegram_search_extension",
 		"type": "keyword",
-		"name": "Youtube Search",
-		"description": "Search for youtube videos",
-		"default_value": "yt"
+		"name": "Telegram Search",
+		"description": "Search for telegram users",
+		"default_value": "tg"
 	}]
 }
