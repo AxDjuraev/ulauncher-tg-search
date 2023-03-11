@@ -23,13 +23,14 @@ def s(f):
 
 
 async def search_chat(query='', limit=10):
-    result = await client(
+    if not query or query.strip() == "":
+        return []
+    return await client(
         SearchRequest(
             query,
             limit=limit
         ),
     )
-    return result
 
 
 async def sync_client(extension):
@@ -77,6 +78,14 @@ class KeywordQueryEventListener(EventListener):
 
             res = []
             dialoges = s(search_chat(limit=limit))
+            if not dialoges:
+                res.append(
+                    ExtensionResultItem(
+                        icon=icon_file,
+                        name='Not Found',
+                        on_enter=HideWindowAction()
+                    )
+                )
             for dialog in dialoges:
                 res.append(
                     ExtensionResultItem(
