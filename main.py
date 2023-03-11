@@ -36,7 +36,9 @@ async def sync_client(extension):
         print(is_authorized)
         print(__file__)
         if not is_authorized:
-            raise ValueError("Client is not authorized!")
+            async with client:
+                pass
+            # raise ValueError("Client is not authorized!")
     else:
         await client.connect()
 
