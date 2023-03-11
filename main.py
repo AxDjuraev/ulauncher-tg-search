@@ -28,7 +28,7 @@ async def sync_client(extension):
         print(session_path)
         client = TelegramClient(
             session_path,
-            api_id=api_id,
+            api_id=int(api_id),
             api_hash=api_hash
         )
         await client.connect()
