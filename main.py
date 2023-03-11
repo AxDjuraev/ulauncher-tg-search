@@ -2,6 +2,7 @@ import logging
 from asyncio import new_event_loop
 
 from telethon.sync import TelegramClient
+from telethon.tl.functions.contacts import SearchRequest
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
@@ -21,16 +22,14 @@ def s(f):
     return loop.run_until_complete(f)
 
 
-async def get_dialoges(limit=10):
-    async_dialoges = client.iter_dialogs()
-    res = []
-    c = 0
-    async for dialog in async_dialoges:
-        res.append(dialog)
-        c += 1
-        if c >= limit:
-            break
-    return res
+async def search_chat(query='', limit=10):
+    result = await client(
+        SearchRequest(
+            query,
+            limit=limit
+        ),
+    )
+    return result
 
 
 async def sync_client(extension):
@@ -77,7 +76,7 @@ class KeywordQueryEventListener(EventListener):
                 ])
 
             res = []
-            dialoges = s(get_dialoges(limit=limit))
+            dialoges = s(search_chat(limit=limit))
             for dialog in dialoges:
                 res.append(
                     ExtensionResultItem(
