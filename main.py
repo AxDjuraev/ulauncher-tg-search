@@ -25,12 +25,17 @@ def s(f):
 async def search_chat(query='', limit=10):
     if not query or query.strip() == "":
         return []
-    return await client(
-        SearchRequest(
-            query,
-            limit=limit
-        ),
-    )
+    results = await client(
+            SearchRequest(
+                query,
+                limit=limit,
+            ),
+        )
+    if not results:
+        return []
+    results = sorted(results.users + results.chats, key=filter)
+    results[:limit]
+    return results
 
 
 async def sync_client(extension):
@@ -87,10 +92,11 @@ class KeywordQueryEventListener(EventListener):
                     )
                 )
             for dialog in dialoges:
+                title = dialog.title if hasattr(dialog, "title") else f'{dialog.first_name} {dialog.last_name if dialog.last_name else ""}'
                 res.append(
                     ExtensionResultItem(
                         icon=icon_file,
-                        name=dialog.title,
+                        name=title,
                         on_enter=OpenUrlAction(f'tg://chat?id={dialog.id}')
                     )
                 )
