@@ -14,10 +14,24 @@ from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 loop = new_event_loop()
 icon_file='images/icon.png'
 client: TelegramClient = None
+limit = 10
 
 
 def s(f):
     return loop.run_until_complete(f)
+
+
+async def get_dialoges(limit=10):
+    async_dialoges = client.iter_dialogs()
+    res = []
+    c = 0
+    async for dialog in async_dialoges:
+        res.append(dialog)
+        c += 1
+        if c >= limit:
+            break
+    return res
+
 
 async def sync_client(extension):
     global client
@@ -62,18 +76,16 @@ class KeywordQueryEventListener(EventListener):
                     )
                 ])
 
-            res = [
-                ExtensionResultItem(
-                    icon=icon_file,
-                    name='axdjuraev2',
-                    on_enter=OpenUrlAction(f'https://t.me/c/axdjuraev')
-                ),
-                ExtensionResultItem(
-                    icon=icon_file,
-                    name='JuraevNozimjon',
-                    on_enter=OpenUrlAction(f'https://t.me/c/JuraevNozimjon')
+            res = []
+            dialoges = s(get_dialoges(limit=limit))
+            for dialog in dialoges:
+                res.append(
+                    ExtensionResultItem(
+                        icon=icon_file,
+                        name=dialog.title,
+                        on_enter=OpenUrlAction(f'tg://chat?id={dialog.id}')
+                    )
                 )
-            ]
 
             return RenderResultListAction(res)
         except ValueError:
