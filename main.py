@@ -32,7 +32,9 @@ async def sync_client(extension):
             api_hash=api_hash
         )
         await client.connect()
-        if not (await client.is_user_authorized()):
+        is_authorized = await client.is_user_authorized()
+        print(is_authorized)
+        if not is_authorized:
             raise ValueError("Client is not authorized!")
     else:
         await client.connect()
