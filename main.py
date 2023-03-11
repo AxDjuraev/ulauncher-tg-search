@@ -15,6 +15,11 @@ loop = new_event_loop()
 icon_file='images/icon.png'
 client = None
 
+
+def s(f):
+    return loop.run_until_complete(f)
+
+
 class TelegramSeachExtension(Extension):
     def __init__(self):
         super(TelegramSeachExtension, self).__init__()
@@ -33,7 +38,8 @@ class KeywordQueryEventListener(EventListener):
                 api_id=api_id,
                 api_hash=api_hash
             )
-            if not loop.run_until_complete(client.is_user_authorized()):
+            s(client.connect())
+            if not s(client.is_user_authorized()):
                 raise ValueError("Client is not authorized!")
 
         query = event.get_argument() or str()
