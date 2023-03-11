@@ -1,5 +1,6 @@
 import logging
 from asyncio import new_event_loop
+from os.path import dirname
 
 from telethon.sync import TelegramClient
 from telethon.tl.functions.contacts import SearchRequest
@@ -12,22 +13,27 @@ from ulauncher.api.shared.action.RenderResultListAction import \
 from ulauncher.api.shared.event import KeywordQueryEvent
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 
+from filters import filter_
+
 loop = new_event_loop()
-icon_file='images/icon.png'
+icon_file = 'images/icon.png'
 client: TelegramClient = None
 limit = 10
+images_path = f'{dirname(__file__)}/images'
 
 
-def user_filter(user):
-    return f'{user.first_name} {user.last_name if user.last_name else ""}'
-
-
-def chat_filter(chat):
-    return chat.title
-
-
-def filter_(obj) -> str:
-    return chat_filter(obj) if hasattr(obj, "title") else user_filter(obj)
+async def download_profile_photo(chat_entity):
+    if chat_entity.photo:
+        fname = f'{images_path}/{chat_entity.id}.jpg'
+        with open(fname, "wb") as photo_file:
+            photo = await client.download_profile_photo(
+                chat_entity,
+                file=photo_file,
+                download_big=False
+            )
+        if photo:
+            return fname
+    return 'images/icon.png'
 
 
 def s(f):
@@ -38,11 +44,11 @@ async def search_chat(query='', limit=10):
     if not query or query.strip() == "":
         return []
     results = await client(
-            SearchRequest(
-                query,
-                limit=limit,
-            ),
-        )
+        SearchRequest(
+            query,
+            limit=limit,
+        ),
+    )
     if not results:
         return []
     results = sorted(results.users + results.chats, key=filter_)
@@ -105,9 +111,10 @@ class KeywordQueryEventListener(EventListener):
                 )
             for dialog in dialoges:
                 title = filter_(dialog)
+                photo_path = s(download_profile_photo(dialog))
                 res.append(
                     ExtensionResultItem(
-                        icon=icon_file,
+                        icon=photo_path,
                         name=title,
                         on_enter=OpenUrlAction(f'tg://chat?id={dialog.id}')
                     )
@@ -126,4 +133,3 @@ class KeywordQueryEventListener(EventListener):
 
 if __name__ == "__main__":
     TelegramSeachExtension().run()
-
