@@ -18,6 +18,18 @@ client: TelegramClient = None
 limit = 10
 
 
+def user_filter(user):
+    return f'{user.first_name} {user.last_name if user.last_name else ""}'
+
+
+def chat_filter(chat):
+    return chat.title
+
+
+def filter_(obj) -> str:
+    return chat_filter(obj) if hasattr(obj, "title") else user_filter(obj)
+
+
 def s(f):
     return loop.run_until_complete(f)
 
@@ -33,7 +45,7 @@ async def search_chat(query='', limit=10):
         )
     if not results:
         return []
-    results = sorted(results.users + results.chats, key=filter)
+    results = sorted(results.users + results.chats, key=filter_)
     results[:limit]
     return results
 
@@ -92,7 +104,7 @@ class KeywordQueryEventListener(EventListener):
                     )
                 )
             for dialog in dialoges:
-                title = dialog.title if hasattr(dialog, "title") else f'{dialog.first_name} {dialog.last_name if dialog.last_name else ""}'
+                title = filter_(dialog)
                 res.append(
                     ExtensionResultItem(
                         icon=icon_file,
