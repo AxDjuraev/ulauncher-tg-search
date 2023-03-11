@@ -13,11 +13,28 @@ from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 
 loop = new_event_loop()
 icon_file='images/icon.png'
-client = None
+client: TelegramClient = None
 
 
 def s(f):
     return loop.run_until_complete(f)
+
+async def sync_client(extension):
+    global client
+    if client is None:
+        api_id = extension.preferences['telegram_client_api_id']
+        api_hash = extension.preferences['telegram_client_api_hash']
+        session_path = extension.preferences['telegram_client_session_path']
+        client = TelegramClient(
+            session_path,
+            api_id=api_id,
+            api_hash=api_hash
+        )
+        await client.connect()
+        if not (await client.is_user_authorized()):
+            raise ValueError("Client is not authorized!")
+    else:
+        await client.connect()
 
 
 class TelegramSeachExtension(Extension):
@@ -28,20 +45,7 @@ class TelegramSeachExtension(Extension):
 
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
-        global client
-        if client is None:
-            api_id = extension.preferences['telegram_client_api_id']
-            api_hash = extension.preferences['telegram_client_api_hash']
-            session_path = extension.preferences['telegram_client_session_path']
-            client = TelegramClient(
-                session_path,
-                api_id=api_id,
-                api_hash=api_hash
-            )
-            s(client.connect())
-            if not s(client.is_user_authorized()):
-                raise ValueError("Client is not authorized!")
-
+        s(sync_client(extension))
         query = event.get_argument() or str()
 
         if len(query.strip()) == 0:
