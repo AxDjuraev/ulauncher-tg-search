@@ -25,6 +25,7 @@ async def sync_client(extension):
         api_id = extension.preferences['telegram_client_api_id']
         api_hash = extension.preferences['telegram_client_api_hash']
         session_path = extension.preferences['telegram_client_session_path']
+        print(session_path)
         client = TelegramClient(
             session_path,
             api_id=api_id,
