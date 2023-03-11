@@ -7,11 +7,31 @@
 	"options": {
 		"query_debounce": 0.6
 	},
-	"preferences": [{
-		"id": "telegram_search_extension",
-		"type": "keyword",
-		"name": "Telegram Search",
-		"description": "Search for telegram users",
-		"default_value": "tg"
-	}]
+	"preferences": [
+		{
+			"id": "telegram_search_extension",
+			"type": "keyword",
+			"name": "Telegram Search",
+			"description": "Search for telegram users",
+			"default_value": "tg"
+		},
+		{
+			"id": "telegram_client_api_id",
+			"type": "text",
+			"name": "API_ID",
+			"description": ""
+		},
+		{
+			"id": "telegram_client_api_hash",
+			"type": "text",
+			"name": "API_HASH",
+			"description": ""
+		},
+		{
+			"id": "telegram_client_session_path",
+			"type": "text",
+			"name": "SESSION_PATH",
+			"description": ""
+		}
+	]
 }
