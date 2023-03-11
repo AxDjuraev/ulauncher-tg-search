@@ -77,7 +77,7 @@ class KeywordQueryEventListener(EventListener):
                 ])
 
             res = []
-            dialoges = s(search_chat(limit=limit))
+            dialoges = s(search_chat(query, limit=limit))
             if not dialoges:
                 res.append(
                     ExtensionResultItem(
