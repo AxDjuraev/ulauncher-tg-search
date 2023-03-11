@@ -49,32 +49,41 @@ class TelegramSeachExtension(Extension):
 
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
-        s(sync_client(extension))
-        query = event.get_argument() or str()
+        try:
+            s(sync_client(extension))
+            query = event.get_argument() or str()
 
-        if len(query.strip()) == 0:
+            if len(query.strip()) == 0:
+                return RenderResultListAction([
+                    ExtensionResultItem(
+                        icon=icon_file,
+                        name='No input',
+                        on_enter=HideWindowAction()
+                    )
+                ])
+
+            res = [
+                ExtensionResultItem(
+                    icon=icon_file,
+                    name='axdjuraev2',
+                    on_enter=OpenUrlAction(f'https://t.me/c/axdjuraev')
+                ),
+                ExtensionResultItem(
+                    icon=icon_file,
+                    name='JuraevNozimjon',
+                    on_enter=OpenUrlAction(f'https://t.me/c/JuraevNozimjon')
+                )
+            ]
+
+            return RenderResultListAction(res)
+        except ValueError:
             return RenderResultListAction([
                 ExtensionResultItem(
                     icon=icon_file,
-                    name='No input',
+                    name='Client NOT Authorized',
                     on_enter=HideWindowAction()
                 )
             ])
-
-        res = [
-            ExtensionResultItem(
-                icon=icon_file,
-                name='axdjuraev2',
-                on_enter=OpenUrlAction(f'https://t.me/c/axdjuraev')
-            ),
-            ExtensionResultItem(
-                icon=icon_file,
-                name='JuraevNozimjon',
-                on_enter=OpenUrlAction(f'https://t.me/c/JuraevNozimjon')
-            )
-        ]
-
-        return RenderResultListAction(res)
 
 
 if __name__ == "__main__":
